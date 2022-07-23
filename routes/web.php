@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Employee;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\EmployeesController;
 
 /*
@@ -15,10 +17,14 @@ use App\Http\Controllers\EmployeesController;
 */
 
 Route::get('/', function () {
-    return view('layout.admin');
-});
+    $jumlahpegawai = Employee::count();
+    $jumlahpegawailaki = Employee::where('jeniskelamin' , 'laki-laki')->count();
+    $jumlahpegawaiperempuan = Employee::where('jeniskelamin' , 'perempuan')->count();
 
-Route::get('/pegawai', [EmployeesController::class, 'index'])->name('pegawai');
+    return view('welcome' , compact('jumlahpegawai' , 'jumlahpegawailaki' , 'jumlahpegawaiperempuan'));
+})->middleware('auth');
+
+Route::get('/pegawai', [EmployeesController::class, 'index'])->name('pegawai')->middleware('auth');
 
 Route::get('/tambahpegawai', [EmployeesController::class, 'tambahpegawai'])->name('tambahpegawai');
 Route::post('/insertdata', [EmployeesController::class, 'insertdata'])->name('insertdata');
@@ -27,3 +33,14 @@ Route::get('/tampilkandata/{id}', [EmployeesController::class, 'tampilkandata'])
 Route::post('/updatedata/{id}', [EmployeesController::class, 'updatedata'])->name('updatedata');
 
 Route::get('/delete/{id}', [EmployeesController::class, 'delete'])->name('delete');
+
+
+Route::get('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/loginproses', [LoginController::class, 'loginproses'])->name('loginproses');
+
+
+Route::get('/register', [LoginController::class, 'register'])->name('register');
+Route::post('/registeruser', [LoginController::class, 'registeruser'])->name('registeruser');
+
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
